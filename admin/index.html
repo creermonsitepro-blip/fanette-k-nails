@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FANETTE.K NAILS — Admin</title>
+  <!-- Sveltia CMS -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@sveltia/cms/dist/sveltia-cms.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+</head>
+<body>
+  <script>
+    const config = {
+      "backend": {
+        "name": "decapbridge",
+        "repo": "TON_USER_GITHUB/fanette-k-nails",
+        "branch": "main",
+        "auth_endpoint": "https://decapbridge.web.app"
+      },
+      "media_folder": "public/images",
+      "public_path": "/images",
+      "collections": [
+        {
+          "name": "content",
+          "label": "Contenu Principal",
+          "file": "_data/content.json",
+          "format": "json",
+          "fields": [
+            {
+              "label": "Entreprise",
+              "name": "business",
+              "widget": "object",
+              "fields": [
+                { "label": "Nom", "name": "name", "widget": "string" },
+                { "label": "Téléphone", "name": "phone", "widget": "string" },
+                { "label": "E-mail", "name": "email", "widget": "string" },
+                { "label": "Adresse", "name": "address", "widget": "string" },
+                { "label": "SIREN", "name": "siren", "widget": "string" },
+                { "label": "Activité", "name": "activity", "widget": "string" },
+                { "label": "Instagram", "name": "instagram", "widget": "string" },
+                { "label": "Facebook", "name": "facebook", "widget": "string" }
+              ]
+            },
+            {
+              "label": "Prestations",
+              "name": "services",
+              "widget": "list",
+              "fields": [
+                { "label": "Nom", "name": "name", "widget": "string" },
+                { "label": "Prix (€)", "name": "price", "widget": "number" },
+                { "label": "Durée (min)", "name": "duration", "widget": "number" },
+                { "label": "Description", "name": "description", "widget": "string" }
+              ]
+            },
+            {
+              "label": "Horaires",
+              "name": "horaires",
+              "widget": "object",
+              "fields": [
+                {
+                  "label": "Mardi",
+                  "name": "mardi",
+                  "widget": "object",
+                  "fields": [
+                    { "label": "Ouverture", "name": "start", "widget": "string" },
+                    { "label": "Fermeture", "name": "end", "widget": "string" }
+                  ]
+                },
+                {
+                  "label": "Mercredi",
+                  "name": "mercredi",
+                  "widget": "object",
+                  "fields": [
+                    { "label": "Ouverture", "name": "start", "widget": "string" },
+                    { "label": "Fermeture", "name": "end", "widget": "string" }
+                  ]
+                },
+                {
+                  "label": "Jeudi",
+                  "name": "jeudi",
+                  "widget": "object",
+                  "fields": [
+                    { "label": "Ouverture", "name": "start", "widget": "string" },
+                    { "label": "Fermeture", "name": "end", "widget": "string" }
+                  ]
+                },
+                {
+                  "label": "Vendredi",
+                  "name": "vendredi",
+                  "widget": "object",
+                  "fields": [
+                    { "label": "Ouverture", "name": "start", "widget": "string" },
+                    { "label": "Fermeture", "name": "end", "widget": "string" }
+                  ]
+                },
+                {
+                  "label": "Samedi",
+                  "name": "samedi",
+                  "widget": "object",
+                  "fields": [
+                    { "label": "Ouverture", "name": "start", "widget": "string" },
+                    { "label": "Fermeture", "name": "end", "widget": "string" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+    window.SveltiaConfig = config;
+  </script>
+</body>
+</html>

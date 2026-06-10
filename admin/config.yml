@@ -3,25 +3,24 @@ backend:
   repo: creermonsitepro-blip/fanette-k-nails
   branch: main
   auth_type: github_app
-  app_id: YOUR_APP_ID
   base_url: https://decapbridge.web.app
   auth_endpoint: /sites/6699f96a-f9ae-44a5-b1b9-7d57a65a08ce/pkce
 
-media_folder: public/uploads
+media_folder: uploads
 public_folder: /uploads
 
 collections:
-  - name: settings
-    label: ParamÃ¨tres
+  - name: contenu
+    label: Contenu du site
     files:
       - name: general
-        label: GÃ©nÃ©ral
+        label: Informations générales
         file: _data/content.json
         fields:
           - label: Nom du salon
             name: salon_name
             widget: string
-          - label: TÃ©lÃ©phone
+          - label: Téléphone
             name: phone
             widget: string
           - label: Email
@@ -33,91 +32,20 @@ collections:
           - label: Horaires
             name: hours
             widget: text
-
-  - name: services
-    label: Services
-    file: _data/content.json
-    fields:
-      - label: Services
-        name: services
-        widget: list
-        fields:
-          - label: Nom
-            name: name
-            widget: string
-          - label: Prix
-            name: price
-            widget: number
-          - label: DurÃ©e (min)
-            name: duration
-            widget: number
-          - label: Description
-            name: description
-            widget: text
-            required: false
-
-  - name: reservations
-    label: RÃ©servations
-    files:
-      - name: reservations_list
-        label: Liste des rÃ©servations
-        file: _data/reservations.json
-        fields:
-          - label: ID
-            name: id
-            widget: string
-          - label: Client
-            name: client_name
-            widget: string
-          - label: Email
-            name: client_email
-            widget: string
-          - label: TÃ©lÃ©phone
-            name: client_phone
-            widget: string
-          - label: Date
-            name: reservation_date
-            widget: date
-          - label: Heure
-            name: reservation_time
-            widget: string
-          - label: Service
-            name: service_name
-            widget: string
-          - label: Prix
-            name: service_price
-            widget: number
-          - label: Notes
-            name: notes
-            widget: text
-            required: false
-          - label: Statut
-            name: status
-            widget: select
-            options:
-              - pending
-              - validated
-              - confirmed
-              - completed
-              - cancelled
-
-  - name: pages
-    label: Pages
-    files:
-      - name: home
-        label: Accueil
-        file: _data/pages/home.json
-        fields:
-          - label: Titre
-            name: title
-            widget: string
-          - label: Description
-            name: description
-            widget: text
-          - label: Image d'en-tÃªte
-            name: header_image
-            widget: image
-            required: false
-
-display_url: https://stellar-granita-433b6f.netlify.app
-logo_url: /uploads/logo.png
+          - label: Services
+            name: services
+            widget: list
+            fields:
+              - label: Nom
+                name: name
+                widget: string
+              - label: Prix
+                name: price
+                widget: number
+              - label: Durée (min)
+                name: duration
+                widget: number
+              - label: Description
+                name: description
+                widget: text
+                required: false
