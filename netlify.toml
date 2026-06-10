@@ -1,39 +1,56 @@
-[build]
+  [build]
   command = "echo 'Static site, no build step needed'"
-  publish = "public"
-  functions = "netlify/functions"
+  publish = "."
 
 [dev]
+  command = "echo 'Dev mode'"
   port = 8000
-  framework = "#custom"
 
 [[redirects]]
-  from = "/admin*"
+  from = "/admin/*"
   to = "/admin/index.html"
   status = 200
+  force = false
 
-# API routes
 [[redirects]]
-  from = "/.netlify/functions/:splat"
-  to = "/.netlify/functions/:splat"
+  from = "/dashboard*"
+  to = "/dashboard.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
   status = 200
 
-# CORS headers pour Supabase
-[[headers]]
-  for = "/.netlify/functions/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
+[context.production.environment]
+  SUPABASE_URL = ""
+  SUPABASE_KEY = ""
+  SUPABASE_SERVICE_KEY = ""
+  STRIPE_PUBLIC_KEY = ""
+  STRIPE_SECRET_KEY = ""
+  SENDGRID_API_KEY = ""
+  FANETTE_EMAIL = "fk.nails26@gmail.com"
+  SITE_URL = ""
+  ADMIN_TOKEN = ""
+  DECAPBRIDGE_URL = "https://decapbridge.web.app"
+  DECAPBRIDGE_REPO = "creermonsitepro-blip/fanette-k-nails"
 
-# Cache images
-[[headers]]
-  for = "/images/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
-# Cache polices
 [[headers]]
-  for = "/*.woff2"
+  for = "/*.html"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "max-age=31536000, immutable"
