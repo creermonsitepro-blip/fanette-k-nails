@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FANETTE — Dashboard Réservations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Montserrat', sans-serif; }
+    .eyebrow { font-size: 0.7rem; letter-spacing: 0.35em; text-transform: uppercase; font-weight: 500; }
+    .pending { background: rgba(184, 161, 121, 0.1); border-left: 3px solid #B8A179; }
+    .validated { background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50; }
+    .loading { opacity: 0.6; pointer-events: none; }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+<header class="bg-black text-white py-4">
+  <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
+    <h1 style="font-family: 'Playfair Display', serif;" class="text-2xl">FANETTE<span style="color: #b8a179;">.</span>K — Dashboard</h1>
+    <button id="logoutBtn" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-sm">Se déconnecter</button>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-8">
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Réservations en attente</h2>
+    <p class="text-gray-600 mb-4">Valide chaque réservation — le client reçoit un email de confirmation</p>
+    
+    <div id="reservationsContainer" class="space-y-4">
+      <div class="text-center text-gray-500 py-8">Chargement...</div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <h3 class="text-xl font-bold mb-4">Historique (validées)</h3>
+    <div id="historyContainer" class="space-y-2 text-sm">
+      <div class="text-center text-gray-500 py-4">Chargement...</div>
+    </div>
+  </div>
+</main>
+
+<script>
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const ADMIN_TOKEN = localStorage.getItem('adminToken') || prompt('Code admin (ADMIN_TOKEN) :');
+
+if (!ADMIN_TOKEN) {
+  alert('Token admin requis');
+  location.href = '/';
+}
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function loadReservations() {
+  try {
+    // Charger les réservations en attente
+    const { data, error } = await supabase
+      .from('reservations')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const container = document.getElementById('reservationsContainer');
+    
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="text-center text-gray-500 py-8">Aucune réservation en attente ✓</div>';
+      return;
+    }
+
+    container.innerHTML = data.map(res => `
+      <div class="pending rounded-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-bold text-lg">${res.client_name}</h3>
+            <p class="text-sm text-gray-600">${res.service_name} — ${new Date(res.reservation_date).toLocaleDateString('fr-FR')} à ${res.reservation_time}</p>
+          </div>
+          <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-bold">EN ATTENTE</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+          <div><strong>Téléphone :</strong> ${res.client_phone}</div>
+          <div><strong>Email :</strong> ${res.client_email}</div>
+          <div><strong>Service :</strong> ${res.service_name}</div>
+          <div><strong>Prix :</strong> ${res.service_price}€</div>
+        </div>
+        ${res.notes ? `<div class="text-sm italic text-gray-700 mb-4">📝 ${res.notes}</div>` : ''}
+        <button onclick="validateReservation('${res.id}')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-bold">
+          ✓ VALIDER ET ENVOYER MAIL
+        </button>
+      </div>
+    `).join('');
+
+    // Charger aussi l'historique
+    loadHistory();
+  } catch (error) {
+    console.error('Erreur:', error);
+    document.getElementById('reservationsContainer').innerHTML = `<div class="text-red-600">Erreur : ${error.message}</div>`;
+  }
+}
+
+async function validateReservation(reservationId) {
+  if (!confirm('Envoyer email de confirmation au client ?')) return;
+
+  const btn = event.target;
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Traitement...';
+
+  try {
+    const res = await fetch('/.netlify/functions/validate-reservation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        reservationId: reservationId,
+        adminToken: ADMIN_TOKEN
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    alert('✓ Réservation validée\nEmail envoyé au client');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    loadReservations(); // Rafraîchir
+  } catch (error) {
+    console.error('Erreur:', error);
+    alert(`Erreur : ${error.message}`);
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = '✓ VALIDER ET ENVOYER MAIL';
+  }
+}
+
+async function loadHistory() {
+  try {
+    const { data, error } = await supabase
+      .from('reservations')
+      .select('*')
+      .eq('status', 'validated')
+      .order('validated_at', { ascending: false })
+      .limit(10);
+
+    if (error) throw error;
+
+    const container = document.getElementById('historyContainer');
+    
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="text-gray-500">Aucune réservation validée</div>';
+      return;
+    }
+
+    container.innerHTML = data.map(res => `
+      <div class="validated p-3 rounded">
+        <div class="flex justify-between items-start">
+          <div>
+            <strong>${res.client_name}</strong> — ${res.service_name} — ${new Date(res.reservation_date).toLocaleDateString('fr-FR')} à ${res.reservation_time}
+          </div>
+          <span class="text-xs text-green-700">✓ ${new Date(res.validated_at).toLocaleDateString('fr-FR')}</span>
+        </div>
+      </div>
+    `).join('');
+  } catch (error) {
+    console.error('Erreur historique:', error);
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('adminToken');
+  location.href = '/';
+});
+
+// Charger au démarrage
+loadReservations();
+
+// Rafraîchir toutes les 30 secondes
+setInterval(loadReservations, 30000);
+</script>
+
+</body>
+</html>

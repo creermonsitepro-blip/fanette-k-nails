@@ -1,0 +1,39 @@
+[build]
+  command = "echo 'Static site, no build step needed'"
+  publish = "public"
+  functions = "netlify/functions"
+
+[dev]
+  port = 8000
+  framework = "#custom"
+
+[[redirects]]
+  from = "/admin*"
+  to = "/admin/index.html"
+  status = 200
+
+# API routes
+[[redirects]]
+  from = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# CORS headers pour Supabase
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# Cache images
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache polices
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

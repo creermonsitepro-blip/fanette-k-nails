@@ -1,0 +1,14 @@
+À FAIRE :
+
+1. Remplacer email partout :
+   - _data/content.json → "fanette.k.nails@gmail.com" → "fk.nails26@gmail.com"
+   - netlify/functions/create-reservation.js → ligne 32 (FANETTE_EMAIL)
+   - netlify/functions/validate-reservation.js → ligne 88 (fanetteMail)
+
+2. Remplacer photo héro :
+   - public/index.html → ligne où heroImg chargée
+   - Utiliser 98174.jpg comme nouvelle photo
+
+3. Pousser les changements sur GitHub
+
+MAIS AVANT : Tu dois créer le site GitHub + faire la config Netlify
